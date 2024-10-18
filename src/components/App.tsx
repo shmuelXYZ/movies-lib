@@ -1,8 +1,13 @@
 import { NavBar } from "./NavBar";
-import { Search } from "./Search";
-import { NumResult } from "./NumResult";
 import { Main } from "./Main";
 import { Muvie, MuvieRate } from "../types";
+import { useState } from "react";
+import { Logo } from "./Logo";
+import { Search } from "./Search";
+import { NumResult } from "./NumResult";
+import { ListBox } from "./ListBox";
+import { WatchedBox } from "./WatchedBox";
+import { MoviesList } from "./MoviesList";
 
 export const tempMovieData: Muvie[] = [
   {
@@ -58,10 +63,20 @@ export const average = (arr: any) =>
   );
 
 export default function App() {
+  const [movies, setMovies] = useState<Muvie[]>(tempMovieData);
   return (
     <>
-      <NavBar />
-      <Main />
+      <NavBar>
+        <Logo />
+        <Search />
+        <NumResult movies={movies} />
+      </NavBar>
+      <Main>
+        <ListBox>
+          <MoviesList movies={movies} />
+        </ListBox>
+        <WatchedBox />
+      </Main>
     </>
   );
 }
