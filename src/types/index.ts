@@ -1,3 +1,5 @@
+import { ReactNode } from "react";
+
 export interface Muvie {
   imdbID: string;
   Title: string;
@@ -13,4 +15,8 @@ export interface MuvieRate {
   runtime: number;
   imdbRating: number;
   userRating: number;
+}
+
+export interface BoxProps {
+  children: ReactNode;
 }

@@ -1,4 +1,4 @@
-import { average } from "./App";
+import { average } from "../App";
 import { MuvieRate } from "../types";
 
 export const Summary = ({ watched }: { watched: MuvieRate[] }) => {
