@@ -11,6 +11,7 @@ import WatchedMoviesList from "./components/WatchedMoviesList";
 import { MoviesList } from "./components/MoviesList";
 import Loader from "./components/Loader";
 import { ErrorMessage } from "./components/ErrorMessage";
+import { MovieDetails } from "./components/MovieDetails";
 
 export const tempWatchedData: MuvieRate[] = [
   {
@@ -44,11 +45,22 @@ export const average = (arr: any) =>
 export default function App() {
   const apikey = process.env.REACT_APP_API_KEY;
 
-  const [query, setQuery] = useState("");
+  const [query, setQuery] = useState<string>("");
   const [movies, setMovies] = useState<Muvie[]>([]);
   const [watched, setWatched] = useState<MuvieRate[]>(tempWatchedData);
   const [isloading, setIsLoading] = useState(false);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
   const [error, setError] = useState("");
+
+  const handeleSelectedMovie = (id: string) => {
+    // setSelectedId((id) => (selectedId === id ? null : id));
+    setSelectedId((selectedId) => (selectedId === id ? null : id));
+    console.log(selectedId, id);
+  };
+
+  const resetSelctedMovie = () => {
+    setSelectedId(null);
+  };
 
   useEffect(() => {
     async function fetchMoveis() {
@@ -92,12 +104,20 @@ export default function App() {
       <Main>
         <Box>
           {isloading && <Loader />}
-          {!isloading && !error && <MoviesList movies={movies} />}
+          {!isloading && !error && (
+            <MoviesList movies={movies} onSelectMovie={handeleSelectedMovie} />
+          )}
           {error && <ErrorMessage message={error} />}
         </Box>
         <Box>
-          <Summary watched={watched} />
-          <WatchedMoviesList watched={watched} />
+          {selectedId ? (
+            <MovieDetails selectedId={selectedId} onClose={resetSelctedMovie} />
+          ) : (
+            <>
+              <Summary watched={watched} />
+              <WatchedMoviesList watched={watched} />
+            </>
+          )}
         </Box>
       </Main>
     </>

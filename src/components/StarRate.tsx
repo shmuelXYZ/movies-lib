@@ -97,15 +97,3 @@ function Star({ onRate, onHoverRate, onLeave, full, size, color }: StarProps) {
     </span>
   );
 }
-
-// import StarRate from "./components/StarRate";
-
-// function Test() {
-//   const [rating, setRating] = useState(0);
-//   return (
-//     <div>
-//       <StarRate color="blue" onSetRatingOut={setRating} />
-//       <p>the rating is {rating}</p>
-//     </div>
-//   );
-// }
