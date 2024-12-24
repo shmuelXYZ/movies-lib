@@ -1,17 +1,29 @@
-import { MuvieRate } from "../types";
+import { MovieRate } from "../types";
 
-export const WatchedMoviesList = ({ watched }: { watched: MuvieRate[] }) => {
+export const WatchedMoviesList = ({
+  watched,
+  onDelete,
+}: {
+  watched: MovieRate[];
+  onDelete: (id: string) => void;
+}) => {
   return (
     <ul className="list">
-      {watched.map((movie: MuvieRate) => (
-        <WatchedMovie movie={movie} />
+      {watched.map((movie: MovieRate) => (
+        <WatchedMovie movie={movie} onDelete={onDelete} />
       ))}
     </ul>
   );
 };
 export default WatchedMoviesList;
 
-const WatchedMovie = ({ movie }: { movie: MuvieRate }) => {
+const WatchedMovie = ({
+  movie,
+  onDelete,
+}: {
+  movie: MovieRate;
+  onDelete: (id: string) => void;
+}) => {
   return (
     <li key={movie.imdbID}>
       <img src={movie.Poster} alt={`${movie.Title} poster`} />
@@ -29,6 +41,9 @@ const WatchedMovie = ({ movie }: { movie: MuvieRate }) => {
           <span>⏳</span>
           <span>{movie.runtime} min</span>
         </p>
+        <button className="btn-delete" onClick={() => onDelete(movie.imdbID)}>
+          X
+        </button>
       </div>
     </li>
   );

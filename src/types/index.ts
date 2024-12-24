@@ -7,7 +7,7 @@ export interface Muvie {
   Poster: string;
 }
 
-export interface MuvieRate {
+export interface MovieRate {
   imdbID: string;
   Title: string;
   Year: string;

@@ -6,12 +6,14 @@ interface StarRateProps {
   color?: string;
   defaultRating?: number;
   className?: string;
+  messages?: string[];
   onSetRating: (rating: number) => void;
 }
 interface StarProps {
   onRate: () => void;
   onHoverIn: () => void;
   onHoverOut: () => void;
+
   full?: boolean;
   size?: number;
   color?: string;
