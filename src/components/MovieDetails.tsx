@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import StarRating from "./StarRate";
 import Loader from "./Loader";
 import { MovieRate } from "../types";
@@ -42,6 +42,12 @@ export const MovieDetails = ({
   const [movie, setMovie] = useState<MovieAPIResponse | null>(null);
   const [userRating, setUserRating] = useState<number>(0);
 
+  const ratingClicks = useRef<number>(0);
+
+  useEffect(() => {
+    if (userRating) ratingClicks.current++;
+  }, [userRating]);
+
   // api call for all detailes of the selected movie
   useEffect(() => {
     async function fetchMovieDtails() {
@@ -52,7 +58,6 @@ export const MovieDetails = ({
         );
         const data = await res.json();
         setMovie(data);
-        console.log(data);
       } catch (err) {
         console.log("error:", err);
       } finally {
@@ -87,6 +92,7 @@ export const MovieDetails = ({
       runtime: parseRuntime(movie.Runtime),
       imdbRating: Number(movie.imdbRating) || 0, // Handle potential NaN
       userRating,
+      userRatingClicks: ratingClicks.current,
     };
 
     onAddWatched(newMovie);

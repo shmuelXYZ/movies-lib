@@ -15,6 +15,7 @@ export interface MovieRate {
   runtime: number;
   imdbRating: number;
   userRating: number;
+  userRatingClicks?: number;
 }
 
 export interface BoxProps {

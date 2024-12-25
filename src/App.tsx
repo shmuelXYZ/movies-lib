@@ -24,7 +24,10 @@ export default function App() {
 
   const [query, setQuery] = useState<string>("");
   const [movies, setMovies] = useState<Muvie[]>([]);
-  const [watched, setWatched] = useState<MovieRate[]>([]);
+  const [watched, setWatched] = useState<MovieRate[]>(() => {
+    const storedWatched = localStorage.getItem("watched");
+    return storedWatched ? JSON.parse(storedWatched) : [];
+  });
   const [isloading, setIsLoading] = useState(false);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [error, setError] = useState("");
@@ -92,6 +95,10 @@ export default function App() {
       controller.abort();
     };
   }, [query]);
+  // keep the sync to lockal storage
+  useEffect(() => {
+    localStorage.setItem("watched", JSON.stringify(watched));
+  }, [watched]);
 
   return (
     <>
