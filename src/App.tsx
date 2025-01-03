@@ -12,6 +12,7 @@ import { MoviesList } from "./components/MoviesList";
 import Loader from "./components/Loader";
 import { ErrorMessage } from "./components/ErrorMessage";
 import { MovieDetails } from "./components/MovieDetails";
+import { useLocalStorageState } from "./hooks/useLocalStoregeState";
 
 export const average = (arr: any) =>
   arr.reduce(
@@ -24,10 +25,10 @@ export default function App() {
 
   const [query, setQuery] = useState<string>("");
   const [movies, setMovies] = useState<Muvie[]>([]);
-  const [watched, setWatched] = useState<MovieRate[]>(() => {
-    const storedWatched = localStorage.getItem("watched");
-    return storedWatched ? JSON.parse(storedWatched) : [];
-  });
+  const [watched, setWatched] = useLocalStorageState<MovieRate[] | any>(
+    "watched",
+    []
+  );
   const [isloading, setIsLoading] = useState(false);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [error, setError] = useState("");
@@ -44,15 +45,14 @@ export default function App() {
 
   const handleAddWatchedMovie = (movie: MovieRate) => {
     const newID = movie.imdbID;
-
-    const isMovieExist = watched.filter((m) => m.imdbID === newID);
-    setWatched((watched) =>
+    const isMovieExist = watched.filter((m: any) => m.imdbID === newID);
+    setWatched((watched: MovieRate[]) =>
       isMovieExist.length > 0 ? watched : [...watched, movie]
     );
   };
 
   const handleDeleteFromWatchedList = (id: string) => {
-    setWatched(watched.filter((movie) => movie.imdbID !== id));
+    setWatched(watched.filter((movie: any) => movie.imdbID !== id));
   };
 
   useEffect(() => {
@@ -95,6 +95,7 @@ export default function App() {
       controller.abort();
     };
   }, [query]);
+
   // keep the sync to lockal storage
   useEffect(() => {
     localStorage.setItem("watched", JSON.stringify(watched));

@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import StarRating from "./StarRate";
 import Loader from "./Loader";
 import { MovieRate } from "../types";
+import { useKeyBoard } from "../hooks/useKeyBoard";
 
 interface MovieAPIResponse {
   Title: string;
@@ -67,19 +68,21 @@ export const MovieDetails = ({
     fetchMovieDtails();
   }, [selectedId]);
 
-  useEffect(() => {
-    function callback(e: KeyboardEvent) {
-      if (e.code === "Escape") {
-        onClose();
-        console.log("esc");
-      }
-    }
-    document.addEventListener("keydown", callback);
-    // cleanup function
-    return () => {
-      document.removeEventListener("keydown", callback);
-    };
-  }, [onClose]);
+  // custom hook to close the modal on esc key
+  useKeyBoard("Escape", onClose);
+  // useEffect(() => {
+  //   function callback(e: KeyboardEvent) {
+  //     if (e.code === "Escape") {
+  //       onClose();
+  //       console.log("esc");
+  //     }
+  //   }
+  //   document.addEventListener("keydown", callback);
+  //   // cleanup function
+  //   return () => {
+  //     document.removeEventListener("keydown", callback);
+  //   };
+  // }, [onClose]);
 
   const handleAdd = () => {
     if (!movie) return; // Guard clause for null movie

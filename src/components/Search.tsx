@@ -1,4 +1,5 @@
-import { useEffect, useRef } from "react";
+import { useRef } from "react";
+import { useKeyBoard } from "../hooks/useKeyBoard";
 
 interface SearchProps {
   query: string;
@@ -7,22 +8,13 @@ interface SearchProps {
 
 export function Search({ query, setQuery }: SearchProps) {
   const inputEl = useRef<null | any>(null);
-  // control the search and listen to enter press
-  useEffect(() => {
-    function callback(e: KeyboardEvent) {
-      console.log(document.activeElement, inputEl);
-      if (document.activeElement === inputEl.current) return;
-      if (e.code === "Enter") {
-        inputEl.current.focus();
-        setQuery("");
-      }
-    }
-    document.addEventListener("keydown", callback);
-    // cleanup function
-    return () => {
-      document.removeEventListener("keydown", callback);
-    };
-  }, [setQuery]);
+
+  // custom hook control the search and listen to enter press
+  useKeyBoard("Enter", function () {
+    if (document.activeElement === inputEl.current) return;
+    inputEl.current.focus();
+    setQuery("");
+  });
 
   return (
     <input
