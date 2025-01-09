@@ -7,7 +7,7 @@ export interface Muvie {
   Poster: string;
 }
 
-export interface MuvieRate {
+export interface MovieRate {
   imdbID: string;
   Title: string;
   Year: string;
@@ -15,6 +15,7 @@ export interface MuvieRate {
   runtime: number;
   imdbRating: number;
   userRating: number;
+  userRatingClicks?: number;
 }
 
 export interface BoxProps {

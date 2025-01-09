@@ -1,7 +1,7 @@
 import { average } from "../App";
-import { MuvieRate } from "../types";
+import { MovieRate } from "../types";
 
-export const Summary = ({ watched }: { watched: MuvieRate[] }) => {
+export const Summary = ({ watched }: { watched: MovieRate[] }) => {
   const avgImdbRating = average(watched.map((movie) => movie.imdbRating));
   const avgUserRating = average(watched.map((movie) => movie.userRating));
   const avgRuntime = average(watched.map((movie) => movie.runtime));
@@ -15,11 +15,11 @@ export const Summary = ({ watched }: { watched: MuvieRate[] }) => {
         </p>
         <p>
           <span>⭐️</span>
-          <span>{avgImdbRating}</span>
+          <span>{avgImdbRating.toFixed(2)}</span>
         </p>
         <p>
           <span>🌟</span>
-          <span>{avgUserRating}</span>
+          <span>{avgUserRating.toFixed(2)}</span>
         </p>
         <p>
           <span>⏳</span>

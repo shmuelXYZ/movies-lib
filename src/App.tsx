@@ -1,6 +1,6 @@
 import { NavBar } from "./components/NavBar";
 import { Main } from "./components/Main";
-import { Muvie, MuvieRate } from "./types";
+import { Muvie, MovieRate } from "./types";
 import { useEffect, useState } from "react";
 import { Logo } from "./components/Logo";
 import { Search } from "./components/Search";
@@ -12,29 +12,7 @@ import { MoviesList } from "./components/MoviesList";
 import Loader from "./components/Loader";
 import { ErrorMessage } from "./components/ErrorMessage";
 import { MovieDetails } from "./components/MovieDetails";
-
-export const tempWatchedData: MuvieRate[] = [
-  {
-    imdbID: "tt1375666",
-    Title: "Inception",
-    Year: "2010",
-    Poster:
-      "https://m.media-amazon.com/images/M/MV5BMjAxMzY3NjcxNF5BMl5BanBnXkFtZTcwNTI5OTM0Mw@@._V1_SX300.jpg",
-    runtime: 148,
-    imdbRating: 8.8,
-    userRating: 10,
-  },
-  {
-    imdbID: "tt0088763",
-    Title: "Back to the Future",
-    Year: "1985",
-    Poster:
-      "https://m.media-amazon.com/images/M/MV5BZmU0M2Y1OGUtZjIxNi00ZjBkLTg1MjgtOWIyNThiZWIwYjRiXkEyXkFqcGdeQXVyMTQxNzMzNDI@._V1_SX300.jpg",
-    runtime: 116,
-    imdbRating: 8.5,
-    userRating: 9,
-  },
-];
+import { useLocalStorageState } from "./hooks/useLocalStoregeState";
 
 export const average = (arr: any) =>
   arr.reduce(
@@ -47,13 +25,16 @@ export default function App() {
 
   const [query, setQuery] = useState<string>("");
   const [movies, setMovies] = useState<Muvie[]>([]);
-  const [watched, setWatched] = useState<MuvieRate[]>(tempWatchedData);
+  const [watched, setWatched] = useLocalStorageState<MovieRate[] | any>(
+    "watched",
+    []
+  );
   const [isloading, setIsLoading] = useState(false);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [error, setError] = useState("");
 
   const handeleSelectedMovie = (id: string) => {
-    // setSelectedId((id) => (selectedId === id ? null : id));
+    // setSelectedId((id) => (selectedId === id ? null : id)); this not work
     setSelectedId((selectedId) => (selectedId === id ? null : id));
     console.log(selectedId, id);
   };
@@ -62,13 +43,27 @@ export default function App() {
     setSelectedId(null);
   };
 
+  const handleAddWatchedMovie = (movie: MovieRate) => {
+    const newID = movie.imdbID;
+    const isMovieExist = watched.filter((m: any) => m.imdbID === newID);
+    setWatched((watched: MovieRate[]) =>
+      isMovieExist.length > 0 ? watched : [...watched, movie]
+    );
+  };
+
+  const handleDeleteFromWatchedList = (id: string) => {
+    setWatched(watched.filter((movie: any) => movie.imdbID !== id));
+  };
+
   useEffect(() => {
+    const controller = new AbortController();
     async function fetchMoveis() {
       try {
         setIsLoading(true);
         setError("");
         const res = await fetch(
-          `http://www.omdbapi.com/?apikey=${apikey}&s=${query}`
+          `http://www.omdbapi.com/?apikey=${apikey}&s=${query}`,
+          { signal: controller.signal }
         );
         if (!res.ok) {
           throw new Error("somthing went wrong");
@@ -78,9 +73,12 @@ export default function App() {
           throw new Error("Movie not found");
         }
         setMovies(data.Search);
+        setError("");
       } catch (err) {
         const error = err as Error;
-        setError(error.message);
+        if ((err as Error).name !== "AbortError") {
+          setError(error.message);
+        }
       } finally {
         setIsLoading(false);
       }
@@ -90,8 +88,18 @@ export default function App() {
       setError("");
       return;
     }
+    resetSelctedMovie();
     fetchMoveis();
+    // cleanup function for aborting race condition
+    return () => {
+      controller.abort();
+    };
   }, [query]);
+
+  // keep the sync to lockal storage
+  useEffect(() => {
+    localStorage.setItem("watched", JSON.stringify(watched));
+  }, [watched]);
 
   return (
     <>
@@ -111,11 +119,18 @@ export default function App() {
         </Box>
         <Box>
           {selectedId ? (
-            <MovieDetails selectedId={selectedId} onClose={resetSelctedMovie} />
+            <MovieDetails
+              selectedId={selectedId}
+              onClose={resetSelctedMovie}
+              onAddWatched={handleAddWatchedMovie}
+            />
           ) : (
             <>
               <Summary watched={watched} />
-              <WatchedMoviesList watched={watched} />
+              <WatchedMoviesList
+                watched={watched}
+                onDelete={handleDeleteFromWatchedList}
+              />
             </>
           )}
         </Box>
